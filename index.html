@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OR-99W Congestion Analysis — PSU STAT 409</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+  :root {
+    --bg: #f4f1eb;
+    --surface: #ffffff;
+    --ink: #1a1a2e;
+    --ink-muted: #5a5a72;
+    --accent: #c0392b;
+    --accent2: #2c3e6b;
+    --accent3: #27635a;
+    --border: #ddd8ce;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--accent2);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 20%;
+    width: 400px; height: 200px;
+    border-radius: 50%;
+    background: rgba(192,57,43,0.15);
+  }
+  .header-inner { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .header-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.15);
+    padding: 0.3rem 0.75rem;
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+    color: rgba(255,255,255,0.9);
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+    font-weight: 400;
+  }
+  header h1 span { color: #f0a070; }
+  header p.subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.75);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+  .header-meta {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.04em;
+  }
+
+  /* MAIN */
+  main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* OVERVIEW */
+  .overview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow);
+  }
+  .overview h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: var(--accent2);
+  }
+  .overview p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--ink-muted);
+    margin-bottom: 0.85rem;
+  }
+  .overview p:last-child { margin-bottom: 0; }
+  .overview strong { color: var(--ink); font-weight: 500; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  /* APPLET CARDS */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(26,26,46,0.13);
+    border-color: #b0aaa0;
+  }
+  .card-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .card-num {
+    position: absolute;
+    top: 1rem; right: 1.25rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--border);
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .card p {
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    flex: 1;
+  }
+  .card-arrow {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+  }
+  .card.coming-soon {
+    opacity: 0.55;
+    cursor: default;
+    pointer-events: none;
+  }
+  .card.coming-soon .card-arrow { color: var(--ink-muted); }
+
+  /* METHODS */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow);
+  }
+  summary {
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--accent2);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+  }
+  summary::before { content: '▶'; font-size: 0.7rem; transition: transform 0.2s; }
+  details[open] summary::before { transform: rotate(90deg); }
+  .methods-body {
+    padding: 0 1.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .methods-body p, .methods-body li {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--ink-muted);
+  }
+  .methods-body ul { padding-left: 1.25rem; margin-top: 0.75rem; }
+  .methods-body li { margin-bottom: 0.4rem; }
+  .methods-body strong { color: var(--ink); font-weight: 500; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    line-height: 1.8;
+  }
+  footer strong { color: var(--ink); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-tag">PSU &nbsp;·&nbsp; STAT 409 &nbsp;·&nbsp; Spring 2026</div>
+    <h1>Defining Traffic Congestion<br>on <span>OR-99W Southbound</span></h1>
+    <p class="subtitle">Interactive exploration of speed patterns, spatial-temporal congestion, and threshold sensitivity along OR-99W SB through Tigard, King City, Tualatin, and Sherwood.</p>
+    <div class="header-meta" id="hdate"></div>
+  </div>
+</header>
+
+<main>
+  <div class="overview">
+    <h2>About This Project</h2>
+    <p><strong>The data</strong> comes from INRIX probe vehicle sensors along OR-99W Southbound, covering 33 road segments across Washington County, Oregon. Speed observations are collected at 5-minute resolution and aggregated to 15-minute intervals for analysis.</p>
+    <p><strong>The question</strong> is deceptively simple: what does "congested" mean? There is no single agreed definition. This project compares threshold-based definitions (speed below X mph, or below X% of free-flow) against data-driven cluster-based definitions on the same real corridor data.</p>
+    <p><strong>Key findings so far</strong> include strong daily periodicity (clear rush-hour slowdowns), spatial heterogeneity across the four cities (Sherwood runs fastest, Tigard is most congested), and distinct weekday vs. weekend patterns. Cluster analysis is ongoing.</p>
+  </div>
+
+  <div class="section-label">Interactive Applets</div>
+  <div class="cards">
+    <a class="card coming-soon" href="#">
+      <div class="card-num">01</div>
+      <div class="card-icon">📊</div>
+      <h3>Cluster Explorer</h3>
+      <p>Explore traffic regime clusters by day of week. See how each cluster's speed and time-of-day signature reveals a distinct travel pattern.</p>
+      <div class="card-arrow">Coming soon →</div>
+    </a>
+    <a class="card" href="./applet02/">
+      <div class="card-num">02</div>
+      <div class="card-icon">🗺️</div>
+      <h3>Hovmöller Diagram Viewer</h3>
+      <p>Space-time heatmap of speed across all 33 segments. Switch between Tigard, King City, Tualatin, and Sherwood to see where and when congestion forms.</p>
+      <div class="card-arrow">Open applet →</div>
+    </a>
+    <a class="card coming-soon" href="#">
+      <div class="card-num">03</div>
+      <div class="card-icon">🚦</div>
+      <h3>Congestion Definition Demo</h3>
+      <p>Adjust speed thresholds and see how the percentage of time and space classified as congested changes. Compares threshold and cluster-based definitions.</p>
+      <div class="card-arrow">Coming soon →</div>
+    </a>
+  </div>
+
+  <div class="section-label">Methods</div>
+  <details>
+    <summary>Data processing &amp; analysis notes</summary>
+    <div class="methods-body">
+      <ul>
+        <li><strong>Source:</strong> INRIX probe vehicle speed data, OR-99W SB, Washington County, OR. April 19–26, 2026 (Hovmöller); January 2025 (clustering analysis).</li>
+        <li><strong>Aggregation:</strong> Raw 5-minute observations are averaged to 15-minute intervals per segment using the floor of the timestamp minute (0, 15, 30, 45).</li>
+        <li><strong>Segments:</strong> 33 sequentially ordered segments cover Tigard (1–15), King City (16–24), Tualatin (25), and Sherwood (26–33).</li>
+        <li><strong>Hovmöller diagrams:</strong> Space-time raster with segment order on the Y-axis (reversed, northernmost at top) and time on the X-axis. Color encodes speed using a Turbo palette capped at 70 mph.</li>
+        <li><strong>Free-flow reference:</strong> The <code>reference_speed</code> field from INRIX, representing typical uncongested speed for each segment.</li>
+        <li><strong>Clustering:</strong> k-means on speed and speed/reference_speed features. Number of clusters and final solution are under evaluation.</li>
+      </ul>
+    </div>
+  </details>
+
+</main>
+
+<footer>
+  <strong>Data:</strong> Oregon DOT / INRIX probe vehicle speeds &nbsp;·&nbsp;
+  <strong>Course:</strong> STAT 409 Data Science Practicum, Spring 2026, Portland State University<br>
+  If a link does not load, refresh or try another browser.
+</footer>
+
+<script>
+  document.getElementById('hdate').textContent =
+    'Last updated: ' + new Date().toLocaleDateString('en-US',
+      {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+</script>
+</body>
+</html>
