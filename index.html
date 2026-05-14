@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traffic Analysis Portfolio - Interactive Visualizations</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #6d8d24 0%, #4a6018 100%);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 60px;
+}
+
+.header h1 {
+  font-size: 3em;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.header p {
+  font-size: 1.3em;
+  opacity: 0.95;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.subtitle {
+  font-size: 1em;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.project-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+}
+
+.project-header {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  color: white;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+}
+
+.project-number {
+  font-size: 0.9em;
+  opacity: 0.7;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.project-title {
+  font-size: 1.8em;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.project-subtitle {
+  font-size: 1em;
+  opacity: 0.85;
+}
+
+.project-body {
+  padding: 30px;
+}
+
+.project-description {
+  color: #4a5568;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  font-size: 1.05em;
+}
+
+.features {
+  margin-bottom: 25px;
+}
+
+.features h3 {
+  font-size: 1.1em;
+  color: #2d3748;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.features ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.features li {
+  color: #4a5568;
+  padding: 8px 0;
+  padding-left: 20px;
+  position: relative;
+  font-size: 0.95em;
+  list-style-type: disc;
+  list-style-position: outside;
+  margin-left: 20px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.tag {
+  background: #edf2f7;
+  color: #4a5568;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.cta-button {
+  display: inline-block;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #6d8d24 0%, #4a6018 100%);
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1em;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(109, 141, 36, 0.4);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(109, 141, 36, 0.6);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+.footer {
+  text-align: center;
+  color: white;
+  margin-top: 60px;
+  padding: 30px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.footer h3 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+}
+
+.footer p {
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+  padding: 10px 25px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.footer-link:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.badge {
+  display: inline-block;
+  background: #48bb78;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 10px;
+}
+
+.badge {
+  display: inline-block;
+  background: #48bb78;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 10px;
+}
+
+.contact-section {
+  text-align: center;
+  color: white;
+  margin-top: 40px;
+  padding: 40px 30px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.contact-section h3 {
+  font-size: 1.8em;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.contact-card {
+  background: rgba(255,255,255,0.15);
+  padding: 20px;
+  border-radius: 12px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.2);
+}
+
+.contact-name {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.contact-email {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  font-size: 0.95em;
+  word-break: break-word;
+}
+
+.contact-email:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2em;
+  }
+  
+  .header p {
+    font-size: 1.1em;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .project-title {
+    font-size: 1.5em;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Traffic Analysis Portfolio</h1>
+    <p>Interactive visualizations exploring traffic patterns using advanced statistical and machine learning methods</p>
+    <p class="subtitle">Complementary approaches to understanding urban traffic dynamics</p>
+  </div>
+
+  <div class="projects-grid">
+    
+    <!-- Oregon INRIX Analysis -->
+    <div class="project-card">
+      <div class="project-header">
+        <h2 class="project-title">Oregon Traffic Analysis</h2>
+        <p class="project-subtitle">Spatial-Temporal Congestion Patterns</p>
+      </div>
+      <div class="project-body">
+        <p class="project-description">
+          Comprehensive analysis of INRIX probe vehicle sensor data along OR-99W Southbound, 
+          examining 33 road segments across Washington County, Oregon. Interactive visualizations 
+          reveal how congestion patterns emerge and propagate through space and time.
+        </p>
+        
+        <div class="features">
+          <h3>Key Features:</h3>
+          <ul>
+            <li>Hovmöller diagrams showing space-time evolution</li>
+            <li>Interactive cluster analysis by day and time</li>
+            <li>Congestion threshold comparison tool</li>
+            <li>5-minute resolution across 33 segments</li>
+            <li>Spatial heterogeneity visualization</li>
+          </ul>
+        </div>
+
+        <div class="tags">
+          <span class="tag">Spatial Analysis</span>
+          <span class="tag">INRIX Data</span>
+          <span class="tag">Clustering</span>
+          <span class="tag">Heatmaps</span>
+        </div>
+
+        <a href="applet02/" class="cta-button">
+          Explore Space-Time Analysis →
+        </a>
+      </div>
+    </div>
+
+    <!-- Bayesian DP-GP Model -->
+    <div class="project-card">
+      <div class="project-header">
+        <h2 class="project-title">Bayesian Traffic Model</h2>
+        <p class="project-subtitle">Dirichlet Process Mixture + HSGP</p>
+      </div>
+      <div class="project-body">
+        <p class="project-description">
+          Sophisticated Bayesian model that automatically discovers traffic regimes without 
+          pre-labeling, combining Dirichlet Process mixtures with locally-periodic Gaussian 
+          Processes. Features computationally efficient HSGP approximation for real-time analysis.
+        </p>
+        
+        <div class="features">
+          <h3>Key Features:</h3>
+          <ul>
+            <li>Automatic regime detection (no labels needed)</li>
+            <li>Real-time parameter adjustment</li>
+            <li>5 interactive visualization modes</li>
+            <li>Uncertainty quantification</li>
+            <li>Spectral density analysis</li>
+          </ul>
+        </div>
+
+        <div class="tags">
+          <span class="tag">Bayesian</span>
+          <span class="tag">Machine Learning</span>
+          <span class="tag">Gaussian Processes</span>
+          <span class="tag">Real-time</span>
+        </div>
+
+        <a href="bayesian_model.html" class="cta-button">
+          Launch Interactive Model →
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="contact" class="contact-section">
+    <h3>Contact</h3>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-name">Ishfaqur Rahman</div>
+        <a href="mailto:ishfaqurrahman371@gmail.com" class="contact-email">ishfaqurrahman371@gmail.com</a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-name">Noe Rodriguez</div>
+        <a href="mailto:noe5@pdx.edu" class="contact-email">noe5@pdx.edu</a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-name">Hayden Burgess</div>
+        <a href="mailto:hburges@pdx.edu" class="contact-email">hburges@pdx.edu</a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-name">Bri Witbeck</div>
+        <a href="mailto:bwitbeck@pdx.edu" class="contact-email">bwitbeck@pdx.edu</a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-name">Bingtang Huang</div>
+        <a href="mailto:bingtang@pdx.edu" class="contact-email">bingtang@pdx.edu</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
