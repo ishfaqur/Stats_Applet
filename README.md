@@ -1,4 +1,4 @@
-# Bayesian Traffic Speed Analysis with Dirichlet Process Mixture & HSGP
+# Bayesian Traffic Speed Analysis with Dirichlet Proces Mixture & HSGP
 
 A sophisticated Bayesian model for analyzing traffic speed time series data using Dirichlet Process mixture models combined with locally-periodic Gaussian Processes, implemented with computationally efficient Hilbert Space approximation.
 
